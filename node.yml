@@ -1,0 +1,25 @@
+---
+-
+  become: true
+  gather_facts: true
+  hosts: localhost
+  tasks:
+    -
+      apt_key:
+        state: present
+        url: "https://deb.nodesource.com/gpgkey/nodesource.gpg.key"
+      name: "Install the gpg key for nodejs LTS"
+    -
+      apt_repository:
+        repo: "deb https://deb.nodesource.com/node_{{ NODEJS_VERSION }}.x {{ ansible_distribution_release }} main"
+        state: present
+        update_cache: true
+      name: "Install the nodejs LTS repos"
+    -
+      apt:
+        name: nodejs
+        state: present
+      name: "Install the nodejs"
+  vars:
+    NODEJS_VERSION: "8"
+    ansible_distribution_release: xenial
