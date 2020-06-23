@@ -1,3 +1,4 @@
+
 ---
 ### terminate AWS EC/2 instances
 - hosts: localhost
@@ -7,24 +8,22 @@
   pre_tasks:
     - include_vars: variables.yml
   tasks:
-    - name: Get EC2 instance IDs
-      run_once: true
-      ec2_remote_facts:
-        filters:
-          "tag:Role": "someRole"
-        region: "us-east-2"
-      register: instances
-
-    - name: display instances
-      run_once: true
-      debug:
-        var: instances
-
-    - name: Remove registered instances
-      run_once: true
+    - name: Stop sandbox instances
+  hosts: localhost
+  gather_facts: false
+  vars:
+    instance_ids:
+      - 'i-0eeda3da688e83cc4'
+      - 'i-05fa0de545c9a1369'
+      - 'i-05079a5a6802121aa'
+      - 'i-04500230244815a8d'
+    region: us-east-1
+  tasks:
+    - name: Stop the sandbox instances
       ec2:
+        instance_ids: '{{ instance_ids }}'
+        region: '{{ region }}'
         state: absent
-        wait: true
-        instance_ids: "i-0a80c19c0105e3bbb"
-        region: "us-east-2"
-      when: instances
+        wait: True
+        vpc_subnet_id: subnet-a2c378c5
+        assign_public_ip: yes
